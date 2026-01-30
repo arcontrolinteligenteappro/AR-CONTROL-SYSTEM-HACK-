@@ -1,0 +1,9 @@
+{
+  "name": "AR GHOST HACK SYSTEM - ChrisRey91",
+  "description": "Advanced Offensive Security & Network Audit Interface. Developed by ChrisRey91.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone",
+    "geolocation"
+  ]
+}
