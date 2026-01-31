@@ -2,43 +2,51 @@
 # AR CONTROL - GHOST INTERFACE v5.5
 **Desarrollado por ChrisRey91** - [www.arcontrolinteligente.com](http://www.arcontrolinteligente.com)
 
-## 🦂 Manual Técnico y de Operatividad
+## 🦂 Manual de Operaciones Final - SCORPION CORE
 
-### 🧬 Módulos del Sistema AR CONTROL
+AR CONTROL es una plataforma de simulación avanzada de ciberseguridad diseñada para dispositivos táctiles (Android) y escritorio. Su arquitectura híbrida combina el poder de la IA con interfaces de comandos táctiles.
 
-#### 1. Núcleo IA Scorpion (Consultoría Ofensiva)
-Potenciado por **Gemini 3 Flash**, este módulo actúa como un asesor experto.
-- **Acción**: Consultas abiertas sobre vulnerabilidades, scripts y tácticas de Red Team.
-- **Formulación**: Respuestas técnicas puras con ejemplos de código y diagramas ASCII.
+### 🧬 Módulos y Funciones Detalladas
 
-#### 2. Phish Master Pro (Ingeniería Social)
-Simulador avanzado para auditorías de concientización.
-- **Lógica**: Clonación de recursos frontend de sitios reales (Facebook, Google, etc.).
-- **Resultados**: Captura de metadatos del objetivo (IP, Agente de usuario, ubicación) y credenciales en texto plano.
+#### 1. Scorpion AI (Consultor de Hacking)
+Motor de conocimiento basado en Gemini 3 Flash. Proporciona inteligencia táctica sobre explotación y auditoría.
+- **Acción**: Análisis de vulnerabilidades, generación de payloads y resolución de retos técnicos.
+- **Ubicación**: Icono `🦂` en el menú de aplicaciones.
 
-#### 3. Auditoría de Redes (Nmap & Traffic Interceptor)
-Mapeo y monitorización de infraestructura.
-- **Nmap Engine**: Escaneo de puertos con detección de servicios y versiones (Banner Grabbing).
-- **Traffic Interceptor**: Sniffer de paquetes en tiempo real con análisis heurístico de amenazas mediante IA.
+#### 2. Phish Master (Ingeniería Social)
+Simulador de vectores de ataque de phishing.
+- **Acción**: Clonación de sitios (Google, FB, Bancos).
+- **Resultados**: Captura de credenciales, IP de origen, geolocalización y huella digital del dispositivo.
+
+#### 3. Network Mapper (Nmap Engine)
+Escaneo y descubrimiento de topología de red.
+- **Acción**: Identificación de hosts, puertos abiertos y detección de OS.
+- **Integración**: Enlace directo con Metasploit para lanzamiento de exploits detectados.
 
 #### 4. Wireless Ghost (Auditoría WiFi)
-Auditoría integral del espectro radioeléctrico.
-- **Funcionalidad**: Escaneo de BSSID, captura de handshakes y cracking WPA2/3.
-- **Visualización**: Tablas dinámicas tipo terminal de `airodump-ng`.
+Captura e inyección de paquetes inalámbricos.
+- **Acción**: Captura de handshakes y cracking de WPA2/3 mediante diccionarios neuronales.
 
-#### 5. Gestión Operativa (VFS & Office Suite)
-Herramientas de administración y reporte.
-- **VFS**: Sistema de archivos virtual para gestionar exploits y logs.
-- **Office Suite**: Procesador de textos, hojas de cálculo y presentaciones para informes de auditoría.
+#### 5. VPN Ghost Proxy
+Gestión de anonimato y salto de nodos global.
+- **Acción**: Cifrado AES-512 y enrutamiento a través de nodos en Rusia, China y Suiza.
 
-### 🔑 Base de Datos de Operadores
-| Usuario | Nivel de Acceso | Password |
+### 🔑 Base de Datos de Accesos (Database)
+Utilice estas credenciales para acceder al núcleo:
+
+| Usuario | Password | Nivel de Acceso |
 | :--- | :--- | :--- |
-| `admin` | Administrador Maestro | `admin` |
-| `chrisrey` | Desarrollador | `scorpion91` |
-| `emsad16` | Operador Regional | `control2025` |
+| `admin` | `admin` | **Root / Full Control** |
+| `chrisrey` | `scorpion91` | **Developer Access** |
+| `emsad16` | `control2025` | **Field Operator** |
 
 ---
-**OBJETIVO FINAL**: Proveer una plataforma tecnológica de vanguardia para la simulación de ciberseguridad avanzada bajo la marca **AR CONTROL INTELLIGENTE**.
+### 🛠 Configuración del Sistema
+Desde el módulo **Configuración (⚙️)**, puede:
+- Cambiar temas visuales (Blood, Ghost, Toxin).
+- Ajustar la intensidad de los efectos visuales (Glitch/Scanlines).
+- **Toggle de Usuarios**: Activar/Desactivar la visibilidad de operadores en la pantalla de inicio.
+- Personalizar el prompt del sistema.
 
-*© 2025 ChrisRey91. Todos los derechos reservados bajo el Protocolo Ghost.*
+**ELABORADO POR CHRISREY91 - www.arcontrolinteligente.com**
+*Este software es exclusivamente para fines educativos y de auditoría autorizada.*

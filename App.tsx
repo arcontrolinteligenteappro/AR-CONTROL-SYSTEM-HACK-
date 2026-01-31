@@ -1,221 +1,197 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import Layout from './components/Layout';
 import Terminal from './components/Terminal';
-import { Tool, TOOLS, THEMES } from './constants';
-import { VirtualFS } from './types';
+import { Tool, TOOLS, THEMES, OpMode } from './constants';
 import AppWindow from './components/AppWindow';
-import FileManager from './components/FileManager';
-import SystemMonitor from './components/SystemMonitor';
 import Login from './components/Login';
-import GenericToolDisplay from './components/GenericToolDisplay';
 import AIConsultant from './components/AIConsultant';
-import FloatingTools from './components/FloatingTools';
+import SettingsPanel from './components/SettingsPanel';
+import ProductivityTools from './components/ProductivityTools';
+import ProjectLab from './components/ProjectLab';
+import TechAcademy from './components/TechAcademy';
+import HackerIntel from './components/HackerIntel';
+import GitHubConnect from './components/GitHubConnect';
+import FileManager from './components/FileManager';
+import WirelessAuditor from './components/WirelessAuditor';
+import TrafficVisualizer from './components/TrafficVisualizer';
+import TrafficInterceptor from './components/TrafficInterceptor';
+import SystemMonitor from './components/SystemMonitor';
+import NetworkScanner from './components/NetworkScanner';
 import OfficeSuite from './components/OfficeSuite';
 import MediaFactory from './components/MediaFactory';
-import NetworkScanner from './components/NetworkScanner';
 import GitHubExploits from './components/GitHubExploits';
-import TrafficInterceptor from './components/TrafficInterceptor';
-import WirelessAuditor from './components/WirelessAuditor';
 import SocialPhish from './components/SocialPhish';
 import VPNProxy from './components/VPNProxy';
-import SettingsPanel from './components/SettingsPanel';
 
-export type InterfaceMode = 'graphic' | 'coding' | 'hybrid';
+interface WindowState {
+  id: string;
+  tool: Tool;
+  zIndex: number;
+  isMinimized: boolean;
+}
+
+interface TerminalState {
+  id: string;
+  tool: Tool;
+}
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [openWindows, setOpenWindows] = useState<any[]>([]);
+  
+  // State for floating window apps
+  const [openWindows, setOpenWindows] = useState<WindowState[]>([]);
   const [focusedWindowId, setFocusedWindowId] = useState<string | null>(null);
   const [maxZIndex, setMaxZIndex] = useState(10);
-  const [interfaceMode, setInterfaceMode] = useState<InterfaceMode>(() => 
-    (localStorage.getItem('arci_mode') as InterfaceMode) || 'hybrid'
-  );
+  
+  // State for terminal panels
+  const [activeTerminals, setActiveTerminals] = useState<TerminalState[]>([]);
 
-  const [theme, setTheme] = useState(() => localStorage.getItem('arci_theme') || 'blood');
-  const [intensity, setIntensity] = useState(() => Number(localStorage.getItem('arci_intensity') || 8));
-  const [customPrompt, setCustomPrompt] = useState(() => localStorage.getItem('arci_prompt') || 'admin@arcontrol');
-  const [showUsers, setShowUsers] = useState(() => localStorage.getItem('arci_show_users') === 'true');
+  const [theme, setTheme] = useState('scorpion');
+  const [opMode, setOpMode] = useState<OpMode>('sim');
+  const [intensity, setIntensity] = useState(5);
+  const [prompt, setPrompt] = useState('operador@arcontrol');
+  const [showUsers, setShowUsers] = useState(true);
 
   const applyTheme = useCallback((themeKey: string) => {
-    const themeData = THEMES[themeKey.toLowerCase()];
+    const themeData = (THEMES as any)[themeKey];
     if (themeData) {
       document.documentElement.style.setProperty('--neon-accent', themeData.accent);
       document.documentElement.style.setProperty('--neon-glow', themeData.glow);
-      document.documentElement.style.setProperty('--bg-color', themeData.bg);
-      document.documentElement.style.setProperty('--text-color', themeData.text);
-      localStorage.setItem('arci_theme', themeKey);
       setTheme(themeKey);
-      return true;
     }
-    return false;
   }, []);
 
-  useEffect(() => {
-    applyTheme(theme);
-  }, [theme, applyTheme]);
+  useEffect(() => { applyTheme(theme); }, [theme, applyTheme]);
 
-  useEffect(() => {
-    localStorage.setItem('arci_mode', interfaceMode);
-    localStorage.setItem('arci_show_users', String(showUsers));
-  }, [interfaceMode, showUsers]);
-
-  const [vfs, setVfs] = useState<VirtualFS>(() => ({
-    currentPath: '/root',
-    root: {
-      name: '/',
-      type: 'directory',
-      children: [
-        { name: 'root', type: 'directory', children: [
-          { name: 'AR_CONTROL', type: 'directory', children: [
-             { name: 'bypass_log.txt', type: 'file', content: 'SESSION_ID: Scorpion_99\nACCESS: GRANTED' }
-          ] },
-          { name: 'EXPLOITS', type: 'directory', children: [
-             { name: 'ghost_injector.sh', type: 'file', content: '#!/bin/bash\necho "Injecting GHOST_PAYLOAD..."' }
-          ] }
-        ]}
-      ]
-    }
-  }));
+  const bringToFront = (id: string) => {
+    setFocusedWindowId(id);
+    setOpenWindows(wins => wins.map(w => w.id === id ? { ...w, zIndex: maxZIndex + 1 } : w));
+    setMaxZIndex(prev => prev + 1);
+  };
 
   const handleToolSelect = (tool: Tool) => {
-    const existing = openWindows.find(w => w.tool.id === tool.id);
-    if (existing) {
-      focusWindow(existing.id);
-      if (existing.isMinimized) {
-        setOpenWindows(prev => prev.map(w => w.id === existing.id ? { ...w, isMinimized: false } : w));
+    if (tool.category === 'Terminals') {
+      const existing = activeTerminals.find(t => t.tool.id === tool.id);
+      if (!existing) { // Allow multiple instances of same terminal type later if needed
+          const newId = `${tool.id}-${Date.now()}`;
+          setActiveTerminals(prev => [...prev, { id: newId, tool }]);
       }
-      return;
+    } else {
+      const existing = openWindows.find(w => w.tool.id === tool.id);
+      if (existing) {
+        if (existing.isMinimized) {
+          setOpenWindows(wins => wins.map(w => w.id === existing.id ? { ...w, isMinimized: false } : w));
+        }
+        bringToFront(existing.id);
+      } else {
+        const newId = `${tool.id}-${Date.now()}`;
+        const newWindow: WindowState = { id: newId, tool, zIndex: maxZIndex + 1, isMinimized: false };
+        setOpenWindows(prev => [...prev, newWindow]);
+        setFocusedWindowId(newId);
+        setMaxZIndex(prev => prev + 1);
+      }
     }
-
-    const newId = `${tool.id}-${Date.now()}`;
-    const newWindow = {
-      id: newId,
-      tool,
-      isMinimized: false,
-      isMaximized: interfaceMode === 'coding' || tool.id === 'settings',
-      zIndex: maxZIndex + 1
-    };
-    
-    setOpenWindows(prev => [...prev, newWindow]);
-    setFocusedWindowId(newId);
-    setMaxZIndex(prev => prev + 1);
+  };
+  
+  const handleMinimize = (id: string) => {
+    setOpenWindows(wins => wins.map(w => w.id === id ? { ...w, isMinimized: true } : w));
+    if (focusedWindowId === id) {
+       const nextFocus = openWindows.filter(w => !w.isMinimized && w.id !== id).sort((a,b) => b.zIndex - a.zIndex)[0];
+       setFocusedWindowId(nextFocus ? nextFocus.id : null);
+    }
   };
 
-  const closeWindow = (id: string) => {
+  const handleCloseWindow = (id: string) => {
     setOpenWindows(prev => prev.filter(w => w.id !== id));
-    if (focusedWindowId === id) setFocusedWindowId(null);
+    if (focusedWindowId === id) {
+       const nextFocus = openWindows.filter(w => w.id !== id).sort((a,b) => b.zIndex - a.zIndex)[0];
+       setFocusedWindowId(nextFocus ? nextFocus.id : null);
+    }
+  };
+  
+  const handleCloseTerminal = (id: string) => {
+    setActiveTerminals(prev => prev.filter(t => t.id !== id));
   };
 
-  const focusWindow = (id: string) => {
-    setFocusedWindowId(id);
-    setMaxZIndex(prev => prev + 1);
-    setOpenWindows(prev => prev.map(w => w.id === id ? { ...w, zIndex: maxZIndex + 1 } : w));
-  };
+  if (!isLoggedIn) return <Login onLogin={() => setIsLoggedIn(true)} />;
 
-  const toggleMinimize = (id: string) => {
-    setOpenWindows(prev => prev.map(w => w.id === id ? { ...w, isMinimized: !w.isMinimized } : w));
-  };
+  const vfsMock = { root: { name: 'root', type: 'directory' as const, children: [] }, currentPath: '/' };
+  
+  const numTerminals = activeTerminals.length;
+  const terminalGridClasses = 
+      numTerminals === 1 ? 'grid-cols-1' :
+      numTerminals === 2 ? 'grid-cols-2' :
+      numTerminals === 3 ? 'grid-cols-3' :
+      numTerminals >= 4 ? 'grid-cols-2 grid-rows-2' : '';
 
-  const toggleMaximize = (id: string) => {
-    setOpenWindows(prev => prev.map(w => w.id === id ? { ...w, isMaximized: !w.isMaximized } : w));
-  };
-
-  if (!isLoggedIn) {
-    return <Login onLogin={() => setIsLoggedIn(true)} showUsers={showUsers} />;
-  }
 
   return (
     <Layout 
       isLoggedIn={true} 
       onToolSelect={handleToolSelect} 
-      activeApp={focusedWindowId ? openWindows.find(w => w.id === focusedWindowId)?.tool.name : undefined}
-      openWindows={openWindows.map(w => w.tool)}
+      openWindows={openWindows}
       onShutdown={() => setIsLoggedIn(false)}
-      interfaceMode={interfaceMode}
-      onModeChange={setInterfaceMode}
+      opMode={opMode}
+      onOpModeChange={setOpMode}
+      onFocus={bringToFront}
     >
-      <div className="relative w-full h-full p-4 overflow-hidden">
-        {openWindows.map((win) => (
+      <div className="relative w-full h-full p-2 md:p-6">
+        {/* Terminal Grid Background */}
+        <div className={`absolute inset-2 md:inset-6 grid ${terminalGridClasses} gap-4 transition-all duration-500`}>
+          {activeTerminals.map((term) => (
+            <Terminal 
+              key={term.id} 
+              tool={term.tool} 
+              opMode={opMode} 
+              onClose={() => handleCloseTerminal(term.id)}
+            />
+          ))}
+        </div>
+        
+        {/* Floating Windows Overlay */}
+        {openWindows.filter(w => !w.isMinimized).map((win) => (
           <div 
             key={win.id}
             style={{ zIndex: win.zIndex }}
-            className={`absolute inset-0 transition-all duration-700 ease-in-out transform ${win.isMinimized ? 'opacity-0 scale-90 translate-y-full pointer-events-none' : 'opacity-100 scale-100'}`}
+            className="absolute inset-0"
           >
             <AppWindow 
               tool={win.tool} 
-              isMaximized={win.isMaximized}
-              onClose={() => closeWindow(win.id)}
-              onMinimize={() => toggleMinimize(win.id)}
-              onMaximize={() => toggleMaximize(win.id)}
-              onFocus={() => focusWindow(win.id)}
+              onClose={() => handleCloseWindow(win.id)}
+              onMinimize={() => handleMinimize(win.id)}
+              onFocus={() => bringToFront(win.id)}
               isFocused={focusedWindowId === win.id}
             >
-              {win.tool.id === 'terminal' || interfaceMode === 'coding' ? (
-                <Terminal 
-                  vfs={vfs} 
-                  onVfsUpdate={setVfs} 
-                  intensity={intensity} 
-                  customPrompt={customPrompt}
-                  onIntensityChange={setIntensity}
-                  onPromptChange={setCustomPrompt}
-                  onThemeChange={applyTheme}
-                  embedded={interfaceMode === 'hybrid' && win.tool.id !== 'terminal'}
-                />
-              ) : null}
-
-              {(win.tool.id !== 'terminal' && (interfaceMode === 'graphic' || interfaceMode === 'hybrid')) && (
-                <div className="flex-1 flex flex-col min-h-0 animate-in slide-in-from-bottom-2 duration-500">
-                   {win.tool.id === 'ai_consultant' ? (
-                    <AIConsultant />
-                  ) : win.tool.id === 'monitor' ? (
-                    <SystemMonitor />
-                  ) : win.tool.id === 'biblioteca' ? (
-                    <FileManager vfs={vfs} />
-                  ) : win.tool.id === 'settings' ? (
-                    <SettingsPanel 
-                      currentTheme={theme} 
-                      onThemeChange={applyTheme} 
-                      intensity={intensity} 
-                      onIntensityChange={setIntensity}
-                      prompt={customPrompt}
-                      onPromptChange={setCustomPrompt}
-                      showUsers={showUsers}
-                      onToggleUsers={setShowUsers}
-                    />
-                  ) : win.tool.id === 'office_suite' ? (
-                    <OfficeSuite />
-                  ) : win.tool.id === 'media_factory' ? (
-                    <MediaFactory />
-                  ) : win.tool.id === 'net_scanner' ? (
-                    <NetworkScanner />
-                  ) : win.tool.id === 'github_exploits' ? (
-                    <GitHubExploits />
-                  ) : win.tool.id === 'traffic_interceptor' ? (
-                    <TrafficInterceptor />
-                  ) : win.tool.id === 'wifi_crack' ? (
-                    <WirelessAuditor />
-                  ) : win.tool.id === 'social_phish' ? (
-                    <SocialPhish />
-                  ) : win.tool.id === 'vpn_proxy' ? (
-                    <VPNProxy />
-                  ) : (
-                    <GenericToolDisplay tool={win.tool} mode={interfaceMode} />
-                  )}
-                </div>
-              )}
+              {win.tool.id === 'ai_scorpion' && <AIConsultant />}
+              {win.tool.id === 'hacker_intel' && <HackerIntel />}
+              {win.tool.id === 'project_lab' && <ProjectLab />}
+              {win.tool.id === 'tech_academy' && <TechAcademy />}
+              {win.tool.id === 'github_connect' && <GitHubConnect />}
+              {win.tool.id === 'github_exploits' && <GitHubExploits />}
+              {win.tool.id === 'file_explorer' && <FileManager vfs={vfsMock} opMode={opMode} />}
+              {win.tool.id === 'wireless_auditor' && <WirelessAuditor opMode={opMode} />}
+              {win.tool.id === 'traffic_visualizer' && <TrafficVisualizer opMode={opMode} />}
+              {win.tool.id === 'traffic_interceptor' && <TrafficInterceptor />}
+              {win.tool.id === 'system_monitor' && <SystemMonitor />}
+              {win.tool.id === 'network_scanner' && <NetworkScanner />}
+              {win.tool.id === 'office_suite' && <OfficeSuite />}
+              {win.tool.id === 'media_factory' && <MediaFactory />}
+              {win.tool.id === 'social_phish' && <SocialPhish />}
+              {win.tool.id === 'vpn_proxy' && <VPNProxy />}
+              {win.tool.id === 'productivity_tools' && <ProductivityTools />}
+              {win.tool.id === 'settings' && <SettingsPanel 
+                currentTheme={theme} 
+                onThemeChange={applyTheme}
+                intensity={intensity}
+                onIntensityChange={setIntensity}
+                prompt={prompt}
+                onPromptChange={setPrompt}
+                showUsers={showUsers}
+                onToggleUsers={setShowUsers}
+              />}
             </AppWindow>
           </div>
         ))}
-
-        {openWindows.length === 0 && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center opacity-10 pointer-events-none select-none transition-all duration-1000">
-             <div className="text-[12rem] font-black font-cyber text-[var(--neon-accent)] leading-none animate-pulse">CONTROL</div>
-             <div className="text-xl font-mono tracking-[1.5em] uppercase text-center">Protocolo Ghost v5.5 Activo<br/>Interfaz de Seguridad Cargada</div>
-          </div>
-        )}
-
-        <FloatingTools onToolSelect={handleToolSelect} />
       </div>
     </Layout>
   );

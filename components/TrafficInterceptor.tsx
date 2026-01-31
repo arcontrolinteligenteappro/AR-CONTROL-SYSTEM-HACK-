@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { executeCommandWithGemini } from '../services/geminiService';
 import { DEVELOPER_CREDIT } from '../constants';
@@ -88,6 +87,15 @@ const TrafficInterceptor: React.FC = () => {
     const result = await executeCommandWithGemini(prompt, [], "PACKET_ANALYSIS_OFFENSIVE_MODE");
     setAnalysis(result);
     setAnalyzing(false);
+  };
+  
+  const hexToAscii = (hexStr: string) => {
+    const hex = hexStr.replace(/ /g, '');
+    let str = '';
+    for (let i = 0; i < hex.length; i += 2) {
+      str += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
+    }
+    return str.replace(/[^\x20-\x7E]/g, '.');
   };
 
   const getThreatColor = (t: string) => {
@@ -218,7 +226,7 @@ const TrafficInterceptor: React.FC = () => {
                     ))}
                  </div>
                  <div className="mt-4 pt-4 border-t border-white/5 text-white/20 break-all select-all hover:text-white/40 transition-colors">
-                    ASCII: {atob(btoa(selected.payload.replace(/ /g, ''))).replace(/[^\x20-\x7E]/g, '.')}
+                    ASCII: {hexToAscii(selected.payload)}
                  </div>
               </div>
             ) : <div className="h-full flex flex-col items-center justify-center opacity-5 select-none uppercase tracking-widest italic">Target_Packet_Not_Selected</div>}
