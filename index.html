@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#050a15">
-    <title>AR CONTROL | GHOST INTERFACE</title>
+    <title>AR CONTROL | HACK TOOL SYSTEM</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -26,18 +26,24 @@
         * {
             -webkit-tap-highlight-color: transparent;
             user-select: none;
+            touch-action: manipulation;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            position: fixed;
+            background-color: var(--deep-dark);
         }
 
         body {
             font-family: 'Rajdhani', sans-serif;
-            background-color: var(--deep-dark);
             color: #d1d5db;
             margin: 0;
-            overflow: hidden;
             background-image: var(--bg-gradient);
-            transition: background 0.5s ease;
-            height: 100vh;
-            width: 100vw;
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
         }
 
         .font-terminal { font-family: 'Fira Code', monospace; }
@@ -48,47 +54,6 @@
             text-shadow: 0 0 5px var(--neon-accent), 0 0 10px var(--neon-glow);
         }
 
-        .scorpion-flicker {
-            animation: flicker 0.15s infinite alternate;
-        }
-
-        @keyframes flicker {
-            0% { opacity: 0.98; filter: brightness(1); }
-            100% { opacity: 1; filter: brightness(1.05); }
-        }
-
-        .cyber-glitch[data-text]::before,
-        .cyber-glitch[data-text]::after {
-            content: attr(data-text);
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%;
-            height: 100%;
-            background: transparent;
-            clip: rect(0, 900px, 0, 0);
-        }
-        .cyber-glitch[data-text]::before {
-            left: -2px;
-            color: var(--neon-magenta);
-            animation: glitch-anim-1 2s infinite linear alternate-reverse;
-        }
-        .cyber-glitch[data-text]::after {
-            left: 2px;
-            color: var(--neon-green);
-            animation: glitch-anim-2 2s infinite linear alternate-reverse;
-        }
-
-        @keyframes glitch-anim-1 {
-            0%, 100% { clip: rect(44px, 9999px, 9px, 0); } 20% { clip: rect(12px, 9999px, 5px, 0); }
-            40% { clip: rect(33px, 9999px, 29px, 0); } 60% { clip: rect(19px, 9999px, 22px, 0); }
-            80% { clip: rect(40px, 9999px, 15px, 0); }
-        }
-        @keyframes glitch-anim-2 {
-            0%, 100% { clip: rect(27px, 9999px, 33px, 0); } 20% { clip: rect(18px, 9999px, 44px, 0); }
-            40% { clip: rect(10px, 9999px, 25px, 0); } 60% { clip: rect(38px, 9999px, 5px, 0); }
-            80% { clip: rect(14px, 9999px, 49px, 0); }
-        }
-
         .crt::before {
             content: " ";
             display: block;
@@ -96,31 +61,35 @@
             top: 0; left: 0; bottom: 0; right: 0;
             background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%), 
                         linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.03));
-            z-index: 1000;
+            z-index: 2000;
             background-size: 100% 2px, 3px 100%;
             pointer-events: none;
             animation: crt-flicker 0.1s infinite;
         }
-        @keyframes crt-flicker { 0% { opacity: 0.95; } 100% { opacity: 1; } }
 
         .scanline-effect {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0; width: 100%; height: 100%;
             pointer-events: none;
-            z-index: 1001;
+            z-index: 2001;
             animation: scanline 8s linear infinite;
             background: linear-gradient(0deg, transparent 50%, rgba(0, 243, 255, 0.05) 51%);
             background-size: 100% 4px;
         }
+
         @keyframes scanline { to { background-position: 0 100%; } }
+        @keyframes crt-flicker {
+            0% { opacity: 0.99; }
+            50% { opacity: 1; }
+            100% { opacity: 0.98; }
+        }
 
         ::-webkit-scrollbar { width: 4px; height: 4px;}
-        ::-webkit-scrollbar-thumb { background: var(--neon-accent); border-radius: 2px; box-shadow: 0 0 10px var(--neon-glow); }
-        .custom-scrollbar::-webkit-scrollbar { display: block; }
-
+        ::-webkit-scrollbar-thumb { background: var(--neon-accent); border-radius: 2px; }
+        
+        input { font-size: 16px !important; }
+        
+        .active-scale:active { transform: scale(0.95); }
     </style>
 <script type="importmap">
 {
@@ -134,7 +103,7 @@
 }
 </script>
 </head>
-<body class="crt scorpion-flicker">
+<body class="crt">
     <div class="scanline-effect"></div>
     <div id="root"></div>
 </body>

@@ -1,10 +1,11 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { executeCommandWithGemini } from '../services/geminiService';
+import ScorpionText from './ScorpionText';
 
 const AIConsultant: React.FC = () => {
   const [chat, setChat] = useState<any[]>([
-    { role: 'model', text: '[+] SCORPION_AI ONLINE.\n[+] Identificado: ChrisRey91 Operador Maestro.\n[+] ¿En qué puedo asistirte hoy? Puedo explicar comandos, generar exploits o analizar archivos.' }
+    { role: 'model', text: '[+] SCORPION_AI ONLINE.\n[+] Operador: ChrisRey Maestro.\n[+] Anonymous activo: No olvidamos.\n[+] ¿Objetivo?' }
   ]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -33,59 +34,57 @@ const AIConsultant: React.FC = () => {
     setChat(prev => [...prev, { role: 'user', text: msg }]);
     setIsTyping(true);
 
-    const res = await executeCommandWithGemini(msg, chat, "Eres Scorpion AI. Eres un experto en ciberseguridad, robótica y electrónica. Explica de forma detallada, proporciona código real y usa tablas ASCII. Estás ayudando a ChrisRey91.");
+    const res = await executeCommandWithGemini(msg, chat, "Eres Scorpion IA, la inteligencia de AR CONTROL SYSTEM HACK TOOL. Tu creador es ChrisRey. Eres un experto agresivo en hacking. Tu lema es Anonymous: No olvidamos, no perdonamos.");
     setChat(prev => [...prev, { role: 'model', text: res }]);
     setIsTyping(false);
   };
 
   return (
-    <div className="flex flex-col h-full bg-[#050505] animate-in fade-in duration-700 font-terminal">
+    <div className="flex flex-col h-full bg-[#020408] animate-in fade-in duration-700 font-terminal">
       <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar" ref={scrollRef}>
         {chat.map((m, i) => (
           <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-            <div className={`max-w-[85%] p-5 rounded-3xl border transition-all duration-500 shadow-xl ${m.role === 'user' ? 'bg-[var(--neon-accent)]/10 border-[var(--neon-accent)]/30 text-white rounded-tr-none' : 'bg-white/5 border-white/10 text-[var(--neon-accent)] rounded-tl-none relative overflow-hidden'}`}>
-              {m.role === 'model' && (
-                <div className="absolute top-0 right-0 p-2 opacity-5 pointer-events-none select-none text-6xl">🦂</div>
-              )}
-              <pre className="whitespace-pre-wrap text-xs sm:text-sm leading-relaxed">{m.text}</pre>
+            <div className={`max-w-[90%] md:max-w-[80%] p-6 rounded-3xl border transition-all duration-500 shadow-2xl ${m.role === 'user' ? 'bg-[var(--neon-accent)]/10 border-[var(--neon-accent)]/30 text-white rounded-tr-none' : 'bg-white/5 border-white/10 text-[var(--neon-accent)] rounded-tl-none relative overflow-hidden'}`}>
+              <pre className="whitespace-pre-wrap text-[11px] md:text-sm leading-relaxed tracking-wide">
+                {m.role === 'model' && i === chat.length - 1 && !isTyping ? <ScorpionText text={m.text} speed={30} delay={0} /> : m.text}
+              </pre>
             </div>
           </div>
         ))}
         {isTyping && (
           <div className="flex justify-start">
-            <div className="bg-white/5 border border-white/10 p-4 rounded-3xl rounded-tl-none animate-pulse flex gap-2 items-center">
-              <div className="w-1.5 h-1.5 bg-[var(--neon-accent)] rounded-full animate-bounce"></div>
-              <div className="w-1.5 h-1.5 bg-[var(--neon-accent)] rounded-full animate-bounce delay-100"></div>
-              <div className="w-1.5 h-1.5 bg-[var(--neon-accent)] rounded-full animate-bounce delay-200"></div>
-              <span className="text-[10px] text-white/30 uppercase ml-2 tracking-widest">Scorpion_Thinking...</span>
+            <div className="bg-white/5 border border-white/10 p-5 rounded-3xl rounded-tl-none animate-pulse flex gap-3 items-center">
+              <div className="w-2 h-2 bg-[var(--neon-accent)] rounded-full animate-bounce"></div>
+              <div className="w-2 h-2 bg-[var(--neon-accent)] rounded-full animate-bounce delay-100"></div>
+              <div className="w-2 h-2 bg-[var(--neon-accent)] rounded-full animate-bounce delay-200"></div>
+              <span className="text-[10px] text-white/20 uppercase tracking-[0.4em] ml-2">Scorpion_Typing...</span>
             </div>
           </div>
         )}
       </div>
 
-      <form onSubmit={handleSubmit} className="p-4 bg-black/80 border-t border-white/10 backdrop-blur-md">
+      <form onSubmit={handleSubmit} className="p-6 bg-black/90 border-t border-white/10 backdrop-blur-3xl pb-safe">
         <div className="flex gap-4 items-center max-w-5xl mx-auto">
           <button 
             type="button" 
             onClick={startVoice}
-            title="Dictar comando"
-            className={`w-14 h-14 rounded-full flex items-center justify-center transition-all shadow-lg active:scale-90 ${isListening ? 'bg-red-600 animate-pulse text-white shadow-red-500/50' : 'bg-white/5 hover:bg-white/10 text-[var(--neon-accent)] border border-white/10'}`}
+            className={`w-14 h-14 rounded-full flex items-center justify-center transition-all ${isListening ? 'bg-red-600 animate-pulse text-white' : 'bg-white/5 text-[var(--neon-accent)] border border-white/10'}`}
           >
-            <span className="text-2xl">🎤</span>
+            <span className="text-xl">🎤</span>
           </button>
           <input 
             type="text" 
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Introduce consulta técnica o dicta comando..."
-            className="flex-1 bg-white/5 border border-white/10 rounded-full py-4 px-8 text-white outline-none focus:border-[var(--neon-accent)] transition-all font-mono text-sm shadow-inner"
+            placeholder="Introduce comando o consulta..."
+            className="flex-1 bg-white/5 border border-white/10 rounded-full py-4 px-8 text-white outline-none focus:border-[var(--neon-accent)] transition-all font-terminal text-sm uppercase"
           />
           <button 
             type="submit"
             disabled={!input.trim() || isTyping}
-            className="w-14 h-14 rounded-full bg-[var(--neon-accent)] text-black flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-[0_0_15px_var(--neon-glow)] disabled:opacity-30"
+            className="w-14 h-14 rounded-full bg-[var(--neon-accent)] text-black flex items-center justify-center disabled:opacity-30 shadow-[0_0_15px_var(--neon-glow)]"
           >
-            <span className="text-2xl">➜</span>
+            <span className="text-xl">➜</span>
           </button>
         </div>
       </form>
